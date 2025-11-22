@@ -34,6 +34,7 @@ export const GameMap: React.FC<GameMapProps> = ({
   
   const [hoverPos, setHoverPos] = useState<{x: number, y: number} | null>(null);
   const { coordinates, theme } = mapConfig;
+  const isVoid = theme.name === 'Void';
 
   // Pre-calculate the path set for quick lookup
   const pathSet = useMemo(() => {
@@ -71,8 +72,8 @@ export const GameMap: React.FC<GameMapProps> = ({
         let bgColor = isPathTile ? theme.path : theme.gridDark;
         let borderColor = 'border-black/10';
 
-        if (isStart) bgColor = 'bg-green-500/80 border-green-300 border-2';
-        if (isEnd) bgColor = 'bg-red-600/80 border-red-300 border-2';
+        if (isStart) bgColor = isVoid ? 'bg-fuchsia-500/80 border-fuchsia-300 border-2' : 'bg-green-500/80 border-green-300 border-2';
+        if (isEnd) bgColor = isVoid ? 'bg-red-600/80 border-red-300 border-2' : 'bg-red-600/80 border-red-300 border-2';
 
         // Checkered grass pattern for aesthetics
         if (!isPathTile) {
@@ -96,7 +97,7 @@ export const GameMap: React.FC<GameMapProps> = ({
             }}
             onClick={() => onTileClick(x, y)}
           >
-            {isStart && <span className="text-[10px] absolute inset-0 flex items-center justify-center text-white font-bold z-10">入口</span>}
+            {isStart && <span className="text-[10px] absolute inset-0 flex items-center justify-center text-white font-bold z-10">起点</span>}
             {isEnd && <span className="text-[10px] absolute inset-0 flex items-center justify-center text-white font-bold z-10">基地</span>}
           </div>
         );
@@ -223,6 +224,7 @@ export const GameMap: React.FC<GameMapProps> = ({
         const top = enemy.y * TILE_SIZE_PX + (TILE_SIZE_PX / 2) - offset;
         const isFrozen = enemy.frozen > 0;
         const isPoisoned = enemy.poisoned > 0;
+        const isRooted = enemy.rooted > 0;
         
         return (
           <div
@@ -240,6 +242,7 @@ export const GameMap: React.FC<GameMapProps> = ({
                 flex items-center justify-center
                 ${enemy.engagedWithSoldierId ? 'animate-bounce' : ''} 
                 ${isFrozen ? 'brightness-150 hue-rotate-180' : ''}
+                ${isRooted ? 'grayscale opacity-80' : ''}
                 ${isPoisoned ? 'animate-pulse saturate-200 sepia' : ''}
                 ${isSuperBoss ? 'text-5xl drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]' : (isBoss || isTank ? 'text-3xl' : 'text-2xl')}
                 ${ENEMY_STATS[enemy.type].color}
@@ -248,6 +251,7 @@ export const GameMap: React.FC<GameMapProps> = ({
              </div>
              {isFrozen && <div className="absolute -right-2 -top-2 text-xs">❄️</div>}
              {isPoisoned && <div className="absolute -left-2 -top-2 text-xs">🤢</div>}
+             {isRooted && <div className="absolute -right-2 top-2 text-xs">🌿</div>}
 
              {/* Health Bar */}
              <div className={`absolute -top-3 bg-gray-800 border border-black rounded-sm overflow-hidden ${isSuperBoss ? 'w-16 h-2' : 'w-8 h-1.5'}`}>
@@ -304,6 +308,21 @@ export const GameMap: React.FC<GameMapProps> = ({
              {spell.type === SpellType.BLIZZARD && (
                <div className="absolute inset-0 flex items-center justify-center text-4xl opacity-30 animate-spin">
                   ❄️
+               </div>
+             )}
+             {spell.type === SpellType.THUNDER && (
+               <div className="absolute inset-0 flex items-center justify-center animate-ping">
+                  <div className="text-6xl">⚡</div>
+               </div>
+             )}
+             {spell.type === SpellType.HEAL && (
+               <div className="absolute inset-0 flex items-center justify-center animate-bounce opacity-50">
+                  <div className="text-4xl">✨</div>
+               </div>
+             )}
+             {spell.type === SpellType.ROOT && (
+               <div className="absolute inset-0 flex items-center justify-center opacity-50">
+                  <div className="text-4xl">🌿</div>
                </div>
              )}
           </div>

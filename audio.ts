@@ -64,7 +64,7 @@ export class AudioController {
 
   // --- SFX ---
 
-  private playTone(freq: number, type: OscillatorType, duration: number, vol: number = 0.1, slideTo: number | null = null) {
+  public playTone(freq: number, type: OscillatorType, duration: number, vol: number = 0.1, slideTo: number | null = null) {
     if (!this.ctx || !this.sfxGain) return;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();

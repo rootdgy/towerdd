@@ -11,7 +11,9 @@ export enum TowerType {
   ICE = 'ICE',
   TESLA = 'TESLA',
   MISSILE = 'MISSILE',
-  POISON = 'POISON'
+  POISON = 'POISON',
+  REPAIR = 'REPAIR',
+  SLOW = 'SLOW'
 }
 
 export enum EnemyType {
@@ -25,18 +27,28 @@ export enum EnemyType {
 
 export enum SpellType {
   METEOR = 'METEOR',
-  BLIZZARD = 'BLIZZARD'
+  BLIZZARD = 'BLIZZARD',
+  THUNDER = 'THUNDER',
+  HEAL = 'HEAL',
+  ROOT = 'ROOT'
 }
 
 export enum AppScreen {
   START = 'START',
   LEVEL_SELECT = 'LEVEL_SELECT',
-  GAME = 'GAME'
+  GAME = 'GAME',
+  COMPENDIUM = 'COMPENDIUM',
+  SHOP = 'SHOP'
+}
+
+export enum GameMode {
+  STORY = 'STORY',
+  ENDLESS = 'ENDLESS'
 }
 
 export interface AppSettings {
-  musicVolume: number; // 0.0 to 1.0
-  sfxVolume: number;   // 0.0 to 1.0
+  musicVolume: number;
+  sfxVolume: number;
 }
 
 export interface Coordinate {
@@ -70,10 +82,11 @@ export interface Enemy extends Entity {
   hp: number;
   maxHp: number;
   speed: number;
-  pathIndex: number; // Current index in the path array
-  progress: number; // 0.0 to 1.0 progress to next tile
-  frozen: number; // frames remaining
-  poisoned: number; // frames remaining
+  pathIndex: number;
+  progress: number;
+  frozen: number;
+  poisoned: number;
+  rooted: number;
   engagedWithSoldierId: string | null;
   reward: number;
 }
@@ -85,9 +98,9 @@ export interface Tower extends Entity {
   cooldown: number;
   lastShotTime: number;
   level: number;
-  investedCost: number; // Total money spent (build + upgrades)
-  hp: number; // Current durability
-  maxHp: number; // Max durability
+  investedCost: number;
+  hp: number;
+  maxHp: number;
 }
 
 export interface Projectile extends Entity {
@@ -107,28 +120,32 @@ export interface Soldier extends Entity {
   range: number;
   engagedEnemyId: string | null;
   originTowerId: string;
-  respawnTime: number; // 0 if alive
+  respawnTime: number;
 }
 
 export interface ActiveSpell extends Entity {
   type: SpellType;
-  startTime: number; // Frame number when cast
-  duration: number; // Duration in frames
+  startTime: number;
+  duration: number;
   radius: number;
 }
 
 export interface GameState {
   money: number;
+  diamonds: number;
+  inventory: string[]; // List of item IDs owned
+  shopStock: string[]; // Current 3 items in shop
   lives: number;
-  wave: number; // Current wave in the level (1-10)
-  currentLevelId: number; // 1, 2, 3...
-  maxUnlockedLevel: number; // Highest level unlocked
+  wave: number;
+  currentLevelId: number;
+  maxUnlockedLevel: number;
   mana: number;
   maxMana: number;
   isPlaying: boolean;
   isGameOver: boolean;
   isLevelComplete: boolean;
   gameSpeed: number;
+  gameMode: GameMode;
 }
 
 export interface TowerConfig {
@@ -137,23 +154,36 @@ export interface TowerConfig {
   cost: number;
   range: number;
   damage: number;
-  cooldown: number; // frames
-  maxHp: number; // Starting durability (number of shots/actions)
-  decayRate: number; // HP lost per action
+  cooldown: number;
+  maxHp: number;
+  decayRate: number;
   description: string;
   color: string;
   icon: string;
+  unlockLevel: number;
 }
 
 export interface SpellConfig {
   name: string;
   type: SpellType;
   manaCost: number;
-  cooldown: number; // frames
+  cooldown: number;
   radius: number;
-  damage: number; // Instant damage (Meteor) or tick damage (Blizzard)
-  duration: number; // frames (0 for instant)
+  damage: number;
+  duration: number;
   description: string;
   color: string;
   icon: React.ReactNode;
+  unlockLevel: number;
+  isUltimate?: boolean;
+}
+
+export interface ShopItem {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+  icon: React.ReactNode;
+  type: 'UNLOCK' | 'CONSUMABLE' | 'PASSIVE' | 'SPECIAL';
+  targetId?: string;
 }
