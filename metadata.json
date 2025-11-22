@@ -1,0 +1,5 @@
+{
+  "name": "React Tower Defense",
+  "description": "A strategic tower defense game where you build archers, barracks, and mines to defend against waves of monsters along a winding path.",
+  "requestFramePermissions": []
+}
