@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
 
 permissions:
   contents: read
@@ -22,7 +22,7 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      # CHANGED: Use 'npm install' instead of 'npm ci' to allow building without a committed lockfile
+      # FIXED: Use 'npm install' instead of 'npm ci' so it works without a committed lockfile
       - name: Install dependencies
         run: npm install
 
