@@ -46,6 +46,13 @@ export const GameMap: React.FC<GameMapProps> = ({
     coordinates.forEach(p => set.add(`${p.x},${p.y}`));
     return set;
   }, [coordinates]);
+  
+  // OPTIMIZATION: Cache tower positions for O(1) lookup during grid render
+  const towerPositions = useMemo(() => {
+    const s = new Set<string>();
+    towers.forEach(t => s.add(`${t.x},${t.y}`));
+    return s;
+  }, [towers]);
 
   const isPath = (x: number, y: number) => pathSet.has(`${x},${y}`);
 
@@ -84,7 +91,8 @@ export const GameMap: React.FC<GameMapProps> = ({
 
         let overlay = null;
         if (isBuilding && hoverPos && hoverPos.x === x && hoverPos.y === y) {
-            const hasTower = towers.some(t => t.x === x && t.y === y);
+            // OPTIMIZATION: Use Set check instead of array.some
+            const hasTower = towerPositions.has(`${x},${y}`);
             const isValid = !isPathTile && !hasTower;
             overlay = (
                 <div className={`absolute inset-0 border-2 ${isValid ? 'border-green-500 bg-green-500/30' : 'border-red-500 bg-red-500/30'} animate-pulse z-20`}></div>
@@ -138,7 +146,8 @@ export const GameMap: React.FC<GameMapProps> = ({
         const hpPercent = (tower.hp / tower.maxHp) * 100;
 
         // Check if under Overclock effect
-        const isOverclocked = activeSpells.some(s => s.type === SpellType.OVERCLOCK && Math.sqrt((s.x-tower.x)**2 + (s.y-tower.y)**2) <= s.radius);
+        // OPTIMIZATION: Squared distance
+        const isOverclocked = activeSpells.some(s => s.type === SpellType.OVERCLOCK && (s.x-tower.x)**2 + (s.y-tower.y)**2 <= s.radius**2);
 
         return (
           <div

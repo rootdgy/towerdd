@@ -13,7 +13,25 @@ export enum TowerType {
   MISSILE = 'MISSILE',
   POISON = 'POISON',
   REPAIR = 'REPAIR',
-  SLOW = 'SLOW'
+  SLOW = 'SLOW',
+  // New Towers
+  GATLING = 'GATLING',
+  SHOTGUN = 'SHOTGUN',
+  MORTAR = 'MORTAR',
+  RADAR = 'RADAR',
+  BANK = 'BANK',
+  VOID_RAY = 'VOID_RAY',
+  RAILGUN = 'RAILGUN',
+  NUKE = 'NUKE',
+  HACKER = 'HACKER',
+  DRONE = 'DRONE',
+  STUNNER = 'STUNNER',
+  INCINERATOR = 'INCINERATOR',
+  PRISM = 'PRISM',
+  SAWBLADE = 'SAWBLADE',
+  LINKER = 'LINKER',
+  BLACK_HOLE = 'BLACK_HOLE',
+  EXECUTIONER = 'EXECUTIONER'
 }
 
 export enum EnemyType {
@@ -28,9 +46,13 @@ export enum EnemyType {
 export enum SpellType {
   METEOR = 'METEOR',
   BLIZZARD = 'BLIZZARD',
-  THUNDER = 'THUNDER',
+  ROOT = 'ROOT',
+  ACID_RAIN = 'ACID_RAIN',
+  OVERCLOCK = 'OVERCLOCK',
+  PLASMA_RAY = 'PLASMA_RAY',
+  TIME_STOP = 'TIME_STOP',
   HEAL = 'HEAL',
-  ROOT = 'ROOT'
+  THUNDER = 'THUNDER'
 }
 
 export enum AppScreen {
@@ -71,10 +93,11 @@ export interface Theme {
 
 export interface MapConfig {
   id: string;
-  name: string;
+  name: string; // Chapter Name
   coordinates: Coordinate[];
   theme: Theme;
   description: string;
+  storyIntro?: string; // Narrative text
 }
 
 export interface Enemy extends Entity {
@@ -87,8 +110,10 @@ export interface Enemy extends Entity {
   frozen: number;
   poisoned: number;
   rooted: number;
+  confused: number; // Moves backwards
   engagedWithSoldierId: string | null;
   reward: number;
+  lastHitTime?: number; // For visual flash
 }
 
 export interface Tower extends Entity {
@@ -101,6 +126,8 @@ export interface Tower extends Entity {
   investedCost: number;
   hp: number;
   maxHp: number;
+  customValue?: number; // For heat, charge, interest time, etc.
+  targetId?: string | null; // For locking on (Void Ray)
 }
 
 export interface Projectile extends Entity {
@@ -109,7 +136,7 @@ export interface Projectile extends Entity {
   speed: number;
   color: string;
   splashRadius?: number;
-  effectType?: 'FREEZE' | 'POISON';
+  effectType?: 'FREEZE' | 'POISON' | 'CONFUSE' | 'STUN' | 'BURN' | 'INSTAKILL';
   type?: TowerType;
 }
 
@@ -130,11 +157,22 @@ export interface ActiveSpell extends Entity {
   radius: number;
 }
 
+export interface VisualEffect extends Entity {
+  text?: string;
+  color: string;
+  life: number; // Frames remaining
+  maxLife: number;
+  vy?: number; // Vertical velocity
+  type?: 'TEXT' | 'BEAM' | 'EXPLOSION';
+  ex?: number; // End X for beam
+  ey?: number; // End Y for beam
+}
+
 export interface GameState {
   money: number;
   diamonds: number;
-  inventory: string[]; // List of item IDs owned
-  shopStock: string[]; // Current 3 items in shop
+  inventory: string[]; 
+  shopStock: string[]; 
   lives: number;
   wave: number;
   currentLevelId: number;
@@ -146,6 +184,7 @@ export interface GameState {
   isLevelComplete: boolean;
   gameSpeed: number;
   gameMode: GameMode;
+  isDevMode: boolean;
 }
 
 export interface TowerConfig {
@@ -185,5 +224,6 @@ export interface ShopItem {
   cost: number;
   icon: React.ReactNode;
   type: 'UNLOCK' | 'CONSUMABLE' | 'PASSIVE' | 'SPECIAL';
+  rarity: 'S' | 'A' | 'B' | 'C' | 'D';
   targetId?: string;
 }

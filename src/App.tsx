@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GameMap } from './components/GameMap';
 import { 
@@ -409,7 +408,11 @@ export default function App() {
         const start = currentMap.coordinates[currentMap.coordinates.length - 1];
         for(let i=0; i<2; i++) soldiersRef.current.push({ id: `merc-${i}`, originTowerId: 'merc', x: start.x, y: start.y, hp: 500, maxHp: 500, damage: 50, range: 3, engagedEnemyId: null, respawnTime: 0 });
     }
-    if (mode === GameMode.ENDLESS) spawnWave(1);
+    if (mode === GameMode.ENDLESS) {
+        // Record the run for daily limit
+        localStorage.setItem('lastEndlessRun', new Date().toDateString());
+        spawnWave(1);
+    }
   };
 
   const syncRenderState = () => {
@@ -813,8 +816,21 @@ export default function App() {
       </div>
   );
 
-  const renderStartScreen = () => (
+  const renderStartScreen = () => {
+    // Check daily cooldown for Endless Mode
+    const lastRun = localStorage.getItem('lastEndlessRun');
+    const today = new Date().toDateString();
+    const dailyAvailable = lastRun !== today;
+    const endlessUnlocked = gameState.maxUnlockedLevel >= 10;
+    const canPlayEndless = (endlessUnlocked || gameState.isDevMode) && (dailyAvailable || gameState.isDevMode);
+
+    return (
     <div className="flex flex-col items-center justify-center w-full h-screen bg-cyber-grid relative z-10 p-8">
+        <div className="absolute top-4 right-4 z-50 flex flex-col items-end pointer-events-none">
+            <div className="text-neon-cyan font-tech text-xs tracking-widest border-b border-neon-cyan pb-1 mb-1">SYSTEM ARCHITECT</div>
+            <div className="text-neon-pink font-bold font-mono text-lg animate-pulse" style={{ textShadow: '0 0 10px #ff00ff' }}>BY: 凌宇不是淋鱼</div>
+        </div>
+
         <h1 className="text-8xl font-black text-neon-pink mb-2 tracking-tighter cp-glitch font-tech" data-text="NEON DEFENSE">NEON DEFENSE</h1>
         <div className="text-2xl text-neon-cyan tracking-[0.5em] mb-12 font-bold font-mono">by:凌宇不是淋鱼</div>
         
@@ -823,11 +839,18 @@ export default function App() {
                 INITIATE MISSION
             </button>
             <button 
-                onClick={() => { if(gameState.maxUnlockedLevel >= 10 || gameState.isDevMode) { resetLevel(1, GameMode.ENDLESS); setScreen(AppScreen.GAME); }}} 
-                disabled={!(gameState.maxUnlockedLevel >= 10 || gameState.isDevMode)}
-                className="cp-btn-outline text-lg uppercase tracking-widest hover:bg-neon-pink hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                onClick={() => { 
+                    if (canPlayEndless) { 
+                        resetLevel(1, GameMode.ENDLESS); 
+                        setScreen(AppScreen.GAME); 
+                    }
+                }} 
+                disabled={!canPlayEndless}
+                className="cp-btn-outline text-lg uppercase tracking-widest hover:bg-neon-pink hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex flex-col items-center"
             >
-                ∞ ENDLESS MODE
+                <span>∞ ENDLESS MODE</span>
+                {!dailyAvailable && !gameState.isDevMode && <span className="text-xs text-red-500 mt-1">[COOLDOWN: DAILY LIMIT]</span>}
+                {!endlessUnlocked && !gameState.isDevMode && <span className="text-xs text-gray-500 mt-1">[LOCKED: CLEAR SECTOR 10]</span>}
             </button>
             <button onClick={loadGameLocal} className="cp-btn-outline text-lg uppercase tracking-widest">
                 RESUME SESSION
@@ -851,7 +874,7 @@ export default function App() {
             </div>
         </div>
     </div>
-  );
+  )};
 
   const renderLevelSelect = () => {
     const levelInfo = selectedStoryLevel ? (selectedStoryLevel <= 3 ? MAP_CONFIGS[0] : (selectedStoryLevel <= 6 ? MAP_CONFIGS[1] : (selectedStoryLevel <= 8 ? MAP_CONFIGS[2] : MAP_CONFIGS[3]))) : null;
@@ -1142,7 +1165,7 @@ export default function App() {
                          >
                              <div className={`text-2xl ${t.color.replace('bg-', 'text-')}`}>{t.icon}</div>
                              <div className="text-[9px] font-bold text-gray-400 font-tech">{t.name}</div>
-                             <div className="text-[10px] text-neon-cyan font-mono">${t.cost}</div>
+                             <div className="text-xs text-neon-cyan font-mono">${t.cost}</div>
                          </button>
                      ))}
                 </div>

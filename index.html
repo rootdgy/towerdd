@@ -3,140 +3,193 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React Tower Defense</title>
+    <title>NEON DEFENSE SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
+
+      :root {
+        --neon-pink: #ff00ff;
+        --neon-cyan: #00ffff;
+        --neon-purple: #bc13fe;
+        --dark-bg: #050b14;
+        --glass-bg: rgba(5, 11, 20, 0.85);
+      }
 
       /* Scrollbar */
       ::-webkit-scrollbar { width: 6px; height: 6px; }
-      ::-webkit-scrollbar-track { background: #050505; }
-      ::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 0; }
-      ::-webkit-scrollbar-thumb:hover { background: #0284c7; }
+      ::-webkit-scrollbar-track { background: var(--dark-bg); }
+      ::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 3px; box-shadow: 0 0 10px var(--neon-cyan); }
 
       body {
         overscroll-behavior: none;
         user-select: none;
         -webkit-user-select: none;
-        font-family: 'Share Tech Mono', monospace; /* Tech font */
-        background-color: #000;
-        color: #e0e0e0;
+        font-family: 'Rajdhani', sans-serif;
+        background-color: var(--dark-bg);
+        color: white;
         overflow: hidden;
       }
 
-      /* --- CYBERPUNK UTILITIES --- */
+      /* --- NEON CYBERPUNK UI KIT --- */
 
-      /* CRT Scanline Overlay */
-      .scanlines {
-        position: fixed;
-        top: 0; left: 0; w: 100%; h: 100%;
-        background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
-        background-size: 100% 4px;
-        pointer-events: none;
-        z-index: 9999;
-        animation: scanlineScroll 10s linear infinite;
-        opacity: 0.6;
-      }
-
-      @keyframes scanlineScroll {
-        0% { background-position: 0 0; }
-        100% { background-position: 0 100%; }
-      }
-
-      /* Moving 3D Grid Background */
-      .cyber-grid {
-        position: absolute;
-        width: 200%;
-        height: 200%;
-        top: -50%;
-        left: -50%;
+      /* 1. Background Grid (Tron Style) */
+      .bg-cyber-grid {
+        background-color: var(--dark-bg);
         background-image: 
           linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
-        background-size: 40px 40px;
-        transform: perspective(500px) rotateX(60deg);
-        animation: gridMove 20s linear infinite;
-        z-index: 0;
-        pointer-events: none;
+          linear-gradient(90deg, rgba(188, 19, 254, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        position: relative;
+        overflow: hidden;
       }
 
-      @keyframes gridMove {
-        0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
-        100% { transform: perspective(500px) rotateX(60deg) translateY(40px); }
-      }
-
-      /* Angled Corners (Sci-Fi Shape) */
-      .cyber-clip {
+      /* 2. Holographic Panels */
+      .cp-panel {
+        background: var(--glass-bg);
+        border: 1px solid var(--neon-cyan);
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(0, 255, 255, 0.05);
+        backdrop-filter: blur(5px);
+        position: relative;
+        border-radius: 4px;
+        /* Tech Corners */
         clip-path: polygon(
-          15px 0, 100% 0, 
-          100% calc(100% - 15px), calc(100% - 15px) 100%, 
-          0 100%, 0 15px
+          10px 0, 100% 0, 
+          100% calc(100% - 10px), 
+          calc(100% - 10px) 100%, 
+          0 100%, 
+          0 10px
         );
       }
       
-      .cyber-clip-sm {
-        clip-path: polygon(
-          5px 0, 100% 0, 
-          100% calc(100% - 5px), calc(100% - 5px) 100%, 
-          0 100%, 0 5px
-        );
-      }
-
-      /* Glitch Text Effect */
-      .cyber-glitch {
-        position: relative;
-      }
-      .cyber-glitch::before,
-      .cyber-glitch::after {
-        content: attr(data-text);
+      /* Circuit / Tech Decoration */
+      .cp-panel::before {
+        content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-      .cyber-glitch::before {
-        left: 2px;
-        text-shadow: -1px 0 #ff00c1;
-        clip: rect(44px, 450px, 56px, 0);
-        animation: glitch-anim 5s infinite linear alternate-reverse;
-      }
-      .cyber-glitch::after {
-        left: -2px;
-        text-shadow: -1px 0 #00fff9;
-        clip: rect(44px, 450px, 56px, 0);
-        animation: glitch-anim2 5s infinite linear alternate-reverse;
+        top: 0; left: 20px; right: 20px; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        opacity: 0.5;
       }
 
-      @keyframes glitch-anim {
-        0% { clip: rect(12px, 9999px, 32px, 0); }
-        20% { clip: rect(65px, 9999px, 89px, 0); }
-        40% { clip: rect(23px, 9999px, 11px, 0); }
-        60% { clip: rect(87px, 9999px, 98px, 0); }
-        80% { clip: rect(4px, 9999px, 24px, 0); }
-        100% { clip: rect(55px, 9999px, 12px, 0); }
-      }
-      @keyframes glitch-anim2 {
-        0% { clip: rect(65px, 9999px, 100px, 0); }
-        20% { clip: rect(12px, 9999px, 32px, 0); }
-        40% { clip: rect(4px, 9999px, 24px, 0); }
-        60% { clip: rect(33px, 9999px, 11px, 0); }
-        80% { clip: rect(87px, 9999px, 98px, 0); }
-        100% { clip: rect(55px, 9999px, 12px, 0); }
-      }
-
-      /* Neon Button Hover */
-      .cyber-btn {
+      /* 3. Neon Buttons */
+      .cp-btn-primary {
+        background: linear-gradient(45deg, var(--neon-purple), #9000ff);
+        color: white;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        padding: 12px 24px;
+        border: 1px solid var(--neon-pink);
+        box-shadow: 0 0 10px var(--neon-purple);
+        transition: all 0.2s;
         position: relative;
+        clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+        text-shadow: 0 0 5px rgba(255,255,255,0.8);
+      }
+      .cp-btn-primary:hover {
+        background: var(--neon-pink);
+        box-shadow: 0 0 20px var(--neon-pink);
+        text-shadow: 0 0 8px white;
+        transform: translateY(-2px);
+      }
+      .cp-btn-primary:active {
+        transform: translateY(0);
+      }
+      .cp-btn-primary:disabled {
+        filter: grayscale(100%);
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .cp-btn-outline {
+        background: transparent;
+        color: var(--neon-cyan);
+        border: 1px solid var(--neon-cyan);
+        padding: 10px 20px;
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 1px;
+        transition: all 0.2s;
+        box-shadow: 0 0 5px var(--neon-cyan), inset 0 0 5px rgba(0,255,255,0.1);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+      .cp-btn-outline:hover {
+        background: rgba(0, 255, 255, 0.1);
+        box-shadow: 0 0 15px var(--neon-cyan);
+        text-shadow: 0 0 8px var(--neon-cyan);
+      }
+
+      .cp-btn-danger {
+        background: transparent;
+        color: #ff3333;
+        border: 1px solid #ff3333;
+        font-family: 'Share Tech Mono', monospace;
+        padding: 8px 16px;
+        box-shadow: 0 0 5px #ff3333;
         transition: all 0.2s;
       }
-      .cyber-btn:hover {
-        text-shadow: 0 0 8px rgba(255,255,255,0.8);
-        box-shadow: inset 0 0 20px rgba(0,255,255,0.2); 
+      .cp-btn-danger:hover {
+        background: #ff3333;
+        color: black;
+        box-shadow: 0 0 15px #ff3333;
       }
-      .cyber-btn:active {
-        transform: scale(0.98);
+
+      /* 4. Text Effects */
+      .font-tech { font-family: 'Orbitron', sans-serif; }
+      .font-mono { font-family: 'Share Tech Mono', monospace; }
+      
+      .text-neon-cyan { color: var(--neon-cyan); text-shadow: 0 0 8px var(--neon-cyan); }
+      .text-neon-pink { color: var(--neon-pink); text-shadow: 0 0 8px var(--neon-pink); }
+      .text-neon-purple { color: var(--neon-purple); text-shadow: 0 0 8px var(--neon-purple); }
+
+      .cp-glitch {
+        position: relative;
+        animation: glitch-skew 1s infinite linear alternate-reverse;
       }
+      .cp-glitch::before, .cp-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0.8;
+      }
+      .cp-glitch::before {
+        color: var(--neon-pink);
+        z-index: -1;
+        animation: glitch-anim-1 2s infinite linear alternate-reverse;
+      }
+      .cp-glitch::after {
+        color: var(--neon-cyan);
+        z-index: -2;
+        animation: glitch-anim-2 3s infinite linear alternate-reverse;
+      }
+
+      @keyframes glitch-skew {
+        0% { transform: skew(0deg); }
+        20% { transform: skew(-2deg); }
+        40% { transform: skew(2deg); }
+        60% { transform: skew(0deg); }
+        80% { transform: skew(1deg); }
+        100% { transform: skew(0deg); }
+      }
+      @keyframes glitch-anim-1 {
+        0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px,0); }
+        20% { clip-path: inset(60% 0 10% 0); transform: translate(2px,0); }
+        100% { clip-path: inset(10% 0 50% 0); transform: translate(-2px,0); }
+      }
+      @keyframes glitch-anim-2 {
+        0% { clip-path: inset(10% 0 60% 0); transform: translate(2px,0); }
+        100% { clip-path: inset(80% 0 5% 0); transform: translate(-2px,0); }
+      }
+
+      /* 5. Utility Overrides for CP compatibility */
+      .text-cp-yellow { color: var(--neon-cyan); text-shadow: 0 0 5px var(--neon-cyan); }
+      .text-cp-blue { color: var(--neon-pink); text-shadow: 0 0 5px var(--neon-pink); }
+      .text-cp-red { color: #ff3333; text-shadow: 0 0 5px #ff3333; }
+      .border-cp-yellow { border-color: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+      .bg-cp-yellow { background-color: var(--neon-cyan); color: black; }
+
+      .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 2px; }
 
     </style>
   <script type="importmap">
@@ -151,7 +204,6 @@
 </script>
 </head>
   <body>
-    <div class="scanlines"></div>
     <div id="root"></div>
   </body>
 </html>
