@@ -22,7 +22,7 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      # FIXED: Use 'npm install' instead of 'npm ci' so it works without a committed lockfile
+      # CHANGED: Use 'npm install' to generate a lockfile if missing
       - name: Install dependencies
         run: npm install
 
