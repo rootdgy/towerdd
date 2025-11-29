@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GameMap } from './components/GameMap';
 import { 
@@ -112,7 +111,7 @@ export default function App() {
       
       const key = e.key;
       const spellKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-      const spellTypes = Object.values(SpellType);
+      const spellTypes = Object.values(SpellType) as SpellType[];
       
       if (spellKeys.includes(key)) {
         const index = parseInt(key) - 1;
