@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GameMap } from './components/GameMap';
 import { 
@@ -987,7 +985,7 @@ export default function App() {
                       </p>
                       <div className="flex justify-end gap-4">
                           {tutorialStep < 3 ? (
-                              <button onClick={() => setTutorialStep(p => p+1)} className="cp-btn-primary">NEXT >></button>
+                              <button onClick={() => setTutorialStep(p => p+1)} className="cp-btn-primary">NEXT {">>"}</button>
                           ) : (
                               <button onClick={closeTutorial} className="cp-btn-primary" style={{borderColor: 'var(--neon-cyan)'}}>JACK OUT (CLOSE)</button>
                           )}
@@ -1183,7 +1181,7 @@ export default function App() {
                     <h2 className="text-6xl font-black text-white mb-2 font-tech text-neon-cyan">MISSION ACCOMPLISHED</h2>
                     <p className="text-green-500 font-mono mb-8">SECTOR SECURED. TRANSFERRING FUNDS...</p>
                     <div className="flex gap-4 justify-center">
-                        <button onClick={() => { const next = gameState.currentLevelId + 1; resetLevel(next, GameMode.STORY); setGameState(p => ({...p, currentLevelId: next, maxUnlockedLevel: Math.max(p.maxUnlockedLevel, next), money: getStartMoney(next, GameMode.STORY) + Math.floor(gameState.money * (hasItem('INSURANCE')?1:0.5)) })); }} className="cp-btn-primary">NEXT SECTOR >></button>
+                        <button onClick={() => { const next = gameState.currentLevelId + 1; resetLevel(next, GameMode.STORY); setGameState(p => ({...p, currentLevelId: next, maxUnlockedLevel: Math.max(p.maxUnlockedLevel, next), money: getStartMoney(next, GameMode.STORY) + Math.floor(gameState.money * (hasItem('INSURANCE')?1:0.5)) })); }} className="cp-btn-primary">NEXT SECTOR {">>"}</button>
                     </div>
                 </div>
             </div>
